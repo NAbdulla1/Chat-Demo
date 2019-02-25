@@ -10,6 +10,7 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:background="@drawable/bot_message_shape"
+        android:padding="5dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintWidth_percent=".7" />
 </android.support.constraint.ConstraintLayout>

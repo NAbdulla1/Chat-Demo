@@ -39,7 +39,6 @@ public class MainActivity extends Activity {
         listAdapter = new MessageListAdapter(this);
         messageList.setAdapter(listAdapter);
 
-
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -91,15 +90,19 @@ public class MainActivity extends Activity {
             if (message.isBotMessage()) {
                 if (message.hasOptions()) {
                     view = getLayoutInflater().inflate(R.layout.bot_message_options, parent, false);
-                    LinearLayout linearLayout = view.findViewById(R.id.option_holder);
+                    LinearLayout linearLayout = view.findViewById(R.id.options_holder);
                     ViewGroup.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                             LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT
                     );
+                    boolean isFirst = true;
                     for (Option option : message.getOptions()) {
+                        if (!isFirst)
+                            linearLayout.addView(getLayoutInflater().inflate(R.layout.options_divider, parent, false));
+                        isFirst = false;
                         TextView textView = new TextView(context);
                         textView.setText(option.getName());
                         textView.setTag(option.getId());//will use on OnClickListener
-                        textView.setPadding(10, 0, 0, 0);
+                        textView.setPadding(5, 5, 5, 5);
                         textView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -109,13 +112,11 @@ public class MainActivity extends Activity {
                         linearLayout.addView(textView, layoutParams);
                     }
                 } else {
-//                    view = layoutInflater.inflate(R.layout.bot_message_normal, parent);
                     view = getLayoutInflater().inflate(R.layout.bot_message_normal, parent, false);
                     TextView msg = view.findViewById(R.id.b_msg);
                     msg.setText(message.getMessage());
                 }
             } else {
-//                view = layoutInflater.inflate(R.layout.user_message, parent);
                 view = getLayoutInflater().inflate(R.layout.user_message, parent, false);
                 TextView msg = view.findViewById(R.id.u_msg);
                 msg.setText(message.getMessage());
