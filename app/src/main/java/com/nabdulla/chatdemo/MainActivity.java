@@ -3,6 +3,7 @@ package com.nabdulla.chatdemo;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -14,8 +15,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 public class MainActivity extends Activity {
 
@@ -24,6 +23,7 @@ public class MainActivity extends Activity {
     private Button sendButton;
     private MessageListAdapter listAdapter;
     private MessageFactory messageFactory;
+    private ConstraintLayout editorSection;//todo we will use this to show or hide messageBox and sendButton
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,8 +32,9 @@ public class MainActivity extends Activity {
 
         messageFactory = new MessageFactory();
 
-        messageBox = findViewById(R.id.message_box);
         messageList = findViewById(R.id.message_list);
+        editorSection = findViewById(R.id.editor_section);
+        messageBox = findViewById(R.id.message_box);
         sendButton = findViewById(R.id.send_button);
 
         listAdapter = new MessageListAdapter(this);
@@ -44,9 +45,18 @@ public class MainActivity extends Activity {
             public void onClick(View v) {
                 if (messageBox.getText().length() != 0) {
                     sendMessage(messageBox.getText().toString());
+                    messageBox.getText().clear();
+                }
+
+                if (messageBox.hasOnClickListeners()) {
+                    messageBox.setOnClickListener(null);
                 }
             }
         });
+
+        /*todo we will use these at runtime, depending on the command from server
+        messageBox.setOnClickListener(new DatePicker());
+        messageBox.setOnClickListener(new TimePicker());*/
     }
 
     private void sendMessage(String str) {
@@ -134,52 +144,5 @@ public class MainActivity extends Activity {
             messages.add(msg);
             notifyDataSetChanged();
         }
-    }
-
-}
-
-class OptionFactory {
-    private List<Option> options = new ArrayList<>();
-    private Random random = new Random();
-
-    public OptionFactory() {
-        for (int i = 0; i < 100; i++) {
-            String name = "Option " + i;
-            String id = "option-" + i;
-            options.add(new Option(name, id));
-        }
-    }
-
-    public List<Option> getOptions(int count) {
-        int st = random.nextInt(options.size() - 2);
-        return options.subList(st, Math.min(options.size() - 1, st + count));
-    }
-}
-
-class MessageFactory {
-    private List<Message> messages = new ArrayList<>();
-    private Random random = new Random();
-    private OptionFactory factory = new OptionFactory();
-    private int next;
-
-    public MessageFactory() {
-        for (int i = 0; i < 20; i++) {
-            boolean hasOptions = random.nextBoolean();
-            List<Option> options;
-            Message message = new Message("Sample Message " + i, true, hasOptions);
-            if (hasOptions) {
-                options = factory.getOptions(random.nextInt(10));
-                message.getOptions().addAll(options);
-            }
-
-            messages.add(message);
-        }
-        next = 0;
-    }
-
-    public Message getNextMessage() {
-        Message message = messages.get(next);
-        next = (next + 1) % messages.size();
-        return message;
     }
 }
